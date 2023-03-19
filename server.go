@@ -1,7 +1,7 @@
 package main
 
 import (
-	"custom-modules/controller"
+	"custom-modules/user"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -9,7 +9,6 @@ import (
 func main() {
 	app := fiber.New()
 
-	controller.SetUpRoutes(app)
-
+	user.SetURL(app)
 	app.Listen(":3000")
 }
