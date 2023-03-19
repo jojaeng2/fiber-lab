@@ -6,7 +6,7 @@ import (
 
 type UserRepository interface {
 	Save(user entity.Users) error
-	FindAll() error
+	FindAll() ([]entity.Users, error)
 }
 
 type UserRepositoryImpl struct {
