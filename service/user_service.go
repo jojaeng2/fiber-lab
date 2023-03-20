@@ -7,14 +7,14 @@ import (
 
 type UserService interface {
 	SaveUser(user entity.Users) error
-	FindAllUsers() error
+	FindAllUsers() ([]entity.Users, error)
 }
 
 type UserServiceImpl struct {
 	userRepository repository.UserRepository
 }
 
-func NewUserService(userRepository repository.UserRepository) *UserServiceImpl {
+func NewUserService(userRepository repository.UserRepository) UserService {
 	return &UserServiceImpl{
 		userRepository: userRepository,
 	}

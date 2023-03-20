@@ -13,7 +13,7 @@ type UserRepositoryImpl struct {
 	users []entity.Users
 }
 
-func NewUserRepository() *UserRepositoryImpl {
+func NewUserRepository() UserRepository {
 	return &UserRepositoryImpl{
 		users: []entity.Users{},
 	}
