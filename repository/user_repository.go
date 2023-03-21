@@ -27,7 +27,3 @@ func (repo *UserRepositoryImpl) Save(user entity.Users) error {
 }
 
 func (repo *UserRepositoryImpl) FindAll() ([]entity.Users, error) {
-	fmt.Println("repository = ", repo.users)
-
-	return repo.users, nil
-}

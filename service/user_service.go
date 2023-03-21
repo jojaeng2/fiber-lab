@@ -4,7 +4,6 @@ import (
 	"custom-modules/dto"
 	"custom-modules/entity"
 	"custom-modules/repository"
-	"fmt"
 )
 
 type UserService interface {
@@ -33,7 +32,6 @@ func (userService *UserServiceImpl) SaveUser(request dto.CreateUserRequest) erro
 
 func (userService *UserServiceImpl) FindAllUsers() ([]entity.Users, error) {
 	users, err := userService.userRepository.FindAll()
-	fmt.Println("service = ", users)
 	if err != nil {
 		return nil, err
 	}
