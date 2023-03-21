@@ -1,12 +1,14 @@
 package service
 
 import (
+	"custom-modules/dto"
 	"custom-modules/entity"
 	"custom-modules/repository"
+	"fmt"
 )
 
 type UserService interface {
-	SaveUser(user entity.Users) error
+	SaveUser(request dto.CreateUserRequest) error
 	FindAllUsers() ([]entity.Users, error)
 }
 
@@ -20,14 +22,21 @@ func NewUserService(userRepository repository.UserRepository) UserService {
 	}
 }
 
-func (userService *UserServiceImpl) SaveUser(user entity.Users) error {
+func (userService *UserServiceImpl) SaveUser(request dto.CreateUserRequest) error {
+	user := entity.Users{
+		Name:     request.Name,
+		Email:    request.Email,
+		Password: request.Password,
+	}
 	return userService.userRepository.Save(user)
 }
 
 func (userService *UserServiceImpl) FindAllUsers() ([]entity.Users, error) {
 	users, err := userService.userRepository.FindAll()
+	fmt.Println("service = ", users)
 	if err != nil {
-		return users, nil
+		return nil, err
 	}
-	return nil, err
+	return users, nil
+
 }

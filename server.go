@@ -12,8 +12,7 @@ func main() {
 	app := fiber.New()
 	userController := initializeUserController()
 	app.Get("/users", userController.FindAllUsers)
-
-	// user.SetURL(app)
+	app.Post("/users", userController.AddUser)
 	app.Listen(":3000")
 }
 
