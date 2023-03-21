@@ -9,6 +9,7 @@ import (
 type UserService interface {
 	SaveUser(request dto.CreateUserRequest) error
 	FindAllUsers() ([]entity.Users, error)
+	FindOneByEmail(email string) (interface{}, error)
 }
 
 type UserServiceImpl struct {
@@ -36,5 +37,12 @@ func (userService *UserServiceImpl) FindAllUsers() ([]entity.Users, error) {
 		return nil, err
 	}
 	return users, nil
+}
 
+func (userService *UserServiceImpl) FindOneByEmail(email string) (interface{}, error) {
+	user, err := userService.userRepository.FindByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+	return user, err
 }

@@ -13,6 +13,7 @@ func main() {
 	userController := initializeUserController()
 	app.Get("/users", userController.FindAllUsers)
 	app.Post("/users", userController.AddUser)
+	app.Get("/users/:email", userController.FindOneByEmail)
 	app.Listen(":3000")
 }
 

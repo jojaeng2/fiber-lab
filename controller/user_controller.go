@@ -10,6 +10,7 @@ import (
 type UserController interface {
 	AddUser(c *fiber.Ctx) error
 	FindAllUsers(c *fiber.Ctx) error
+	FindOneByEmail(c *fiber.Ctx) error
 }
 
 type UserControllerImpl struct {
@@ -38,4 +39,16 @@ func (controller *UserControllerImpl) FindAllUsers(c *fiber.Ctx) error {
 		return err
 	}
 	return c.JSON(users)
+}
+
+func (controller *UserControllerImpl) FindOneByEmail(c *fiber.Ctx) error {
+	email := c.Params("email")
+	user, err := controller.userService.FindOneByEmail(email)
+
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": email + "과 일치하는 회원이 존재하지 않습니다.",
+		})
+	}
+	return c.JSON(user)
 }
