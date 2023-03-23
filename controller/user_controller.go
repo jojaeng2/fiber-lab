@@ -11,6 +11,7 @@ type UserController interface {
 	AddUser(c *fiber.Ctx) error
 	FindAllUsers(c *fiber.Ctx) error
 	FindOneByEmail(c *fiber.Ctx) error
+	Login(c *fiber.Ctx) error
 }
 
 type UserControllerImpl struct {
@@ -51,4 +52,17 @@ func (controller *UserControllerImpl) FindOneByEmail(c *fiber.Ctx) error {
 		})
 	}
 	return c.JSON(user)
+}
+
+func (controller *UserControllerImpl) Login(c *fiber.Ctx) error {
+	var request dto.LoginRequest
+	err := c.BodyParser(&request)
+	if err != nil {
+		return err
+	}
+	err2 := controller.userService.LoginUser(request)
+	if err2 != nil {
+		return err2
+	}
+	return c.SendStatus(fiber.StatusOK)
 }

@@ -16,7 +16,9 @@ func main() {
 	userController := initializeUserController()
 	app.Get("/users", userController.FindAllUsers)
 	app.Post("/users", userController.AddUser)
+	app.Post("/login", userController.Login)
 	app.Get("/users/:email", userController.FindOneByEmail)
+
 	app.Listen(":3000")
 }
 

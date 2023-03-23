@@ -4,12 +4,15 @@ import (
 	"custom-modules/dto"
 	"custom-modules/entity"
 	"custom-modules/repository"
+	"errors"
+	"fmt"
 )
 
 type UserService interface {
 	SaveUser(request dto.CreateUserRequest) error
 	FindAllUsers() ([]entity.Users, error)
 	FindOneByEmail(email string) (interface{}, error)
+	LoginUser(request dto.LoginRequest) error
 }
 
 type UserServiceImpl struct {
@@ -45,4 +48,24 @@ func (userService *UserServiceImpl) FindOneByEmail(email string) (interface{}, e
 		return nil, err
 	}
 	return user, err
+}
+
+func (userService *UserServiceImpl) LoginUser(request dto.LoginRequest) error {
+	user, err := userService.userRepository.FindByEmail(request.Email)
+	fmt.Println(user)
+
+	if err != nil {
+		return err
+	}
+	if user == nil {
+		return errors.New("user not found")
+	}
+	u, ok := user.(*entity.Users) // 타입 어서션
+	if !ok {
+		return errors.New("unexpected user type")
+	}
+	if u.Password == request.Password {
+		return nil
+	}
+	return errors.New("잘못된 정보입니다.")
 }
