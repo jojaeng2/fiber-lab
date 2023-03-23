@@ -28,7 +28,7 @@ func (userService *UserServiceImpl) SaveUser(request dto.CreateUserRequest) erro
 		Email:    request.Email,
 		Password: request.Password,
 	}
-	return userService.userRepository.Save(user)
+	return userService.userRepository.Save(&user)
 }
 
 func (userService *UserServiceImpl) FindAllUsers() ([]entity.Users, error) {

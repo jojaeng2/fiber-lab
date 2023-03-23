@@ -3,38 +3,45 @@ package repository
 import (
 	"custom-modules/entity"
 	"errors"
+
+	"gorm.io/gorm"
 )
 
 type UserRepository interface {
-	Save(user entity.Users) error
+	Save(user *entity.Users) error
 	FindAll() ([]entity.Users, error)
 	FindByEmail(email string) (interface{}, error)
 }
 
 type UserRepositoryImpl struct {
-	users []entity.Users
+	db *gorm.DB
 }
 
-func NewUserRepository() UserRepository {
-	return &UserRepositoryImpl{
-		users: []entity.Users{},
-	}
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return &UserRepositoryImpl{db}
 }
 
-func (repo *UserRepositoryImpl) Save(user entity.Users) error {
-	repo.users = append(repo.users, user)
-	return nil
+func (repo *UserRepositoryImpl) Save(user *entity.Users) error {
+	return repo.db.Create(user).Error
 }
 
 func (repo *UserRepositoryImpl) FindAll() ([]entity.Users, error) {
-	return repo.users, nil
+	var users []entity.Users
+	err := repo.db.Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
 func (repo *UserRepositoryImpl) FindByEmail(email string) (interface{}, error) {
-	for _, user := range repo.users {
-		if user.Email == email {
-			return user, nil
+	var user entity.Users
+	err := repo.db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.New("user not found")
 		}
+		return nil, err
 	}
-	return nil, errors.New("user not found")
+	return &user, nil
 }
