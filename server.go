@@ -2,6 +2,7 @@ package main
 
 import (
 	"custom-modules/controller"
+	"custom-modules/entity"
 	"custom-modules/repository"
 	"custom-modules/service"
 
@@ -24,11 +25,19 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	db.Exec("CREATE TABLE IF NOT EXISTS users2 (id INT, name VARCHAR(255))")
-
+	// User 모델에 해당하는 테이블 생성
+	db.AutoMigrate(&entity.Users{})
 }
 
 func initializeUserController() controller.UserController {
+	dsn := "root:@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	// User 모델에 해당하는 테이블 생성
+	db.AutoMigrate(&entity.Users{})
+
 	userRepository := repository.NewUserRepository()
 	userService := service.NewUserService(userRepository)
 	return controller.NewUserController(userService)
