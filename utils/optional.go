@@ -1,31 +1,30 @@
 package optional
 
-type Optional interface {
-	IsPresent() bool
-
-	OrElse() interface{}
-
-	OrElseThrow(interface{}) interface{}
-}
-
-type OptionalImpl struct {
+type Optional struct {
 	instance interface{}
 }
 
-func (optionalImpl OptionalImpl) IsPresent() bool {
-	return optionalImpl.instance != nil
+func OfNullable(instance interface{}) *Optional {
+	if instance == nil {
+		return &Optional{instance: nil}
+	}
+	return &Optional{instance: instance}
 }
 
-func (optionalImpl OptionalImpl) OrElse(instance interface{}) interface{} {
-	if optionalImpl.IsPresent() {
-		return optionalImpl.instance
+func (optional Optional) IsPresent() bool {
+	return optional.instance != nil
+}
+
+func (optional Optional) OrElse(instance interface{}) interface{} {
+	if optional.IsPresent() {
+		return optional.instance
 	}
 	return instance
 }
 
-func (optionalImpl OptionalImpl) OrElseThrow() interface{} {
-	if optionalImpl.IsPresent() {
-		return optionalImpl.instance
+func (optional Optional) OrElseThrow() interface{} {
+	if optional.IsPresent() {
+		return optional.instance
 	}
 	panic("Null Pointer Exception")
 }
