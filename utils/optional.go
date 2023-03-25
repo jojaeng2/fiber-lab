@@ -1,4 +1,4 @@
-package optional
+package utils
 
 type Optional struct {
 	instance interface{}
