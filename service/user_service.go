@@ -11,8 +11,8 @@ import (
 type UserService interface {
 	SaveUser(request dto.CreateUserRequest) error
 	FindAllUsers() ([]entity.Users, error)
-	FindOneByEmail(email string) interface{}
-	LoginUser(request dto.LoginRequest)
+	FindOneByEmail(email string) (interface{}, error)
+	LoginUser(request dto.LoginRequest) error
 }
 
 type UserServiceImpl struct {
@@ -42,19 +42,31 @@ func (userService *UserServiceImpl) FindAllUsers() ([]entity.Users, error) {
 	return users, nil
 }
 
-func (userService *UserServiceImpl) FindOneByEmail(email string) interface{} {
-	return userService.userRepository.FindByEmail(email).OrElseThrow()
+func (userService *UserServiceImpl) FindOneByEmail(email string) (interface{}, error) {
+	user, err := userService.userRepository.FindByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+	return user, err
 }
 
-func (userService *UserServiceImpl) LoginUser(request dto.LoginRequest) {
-	user := userService.userRepository.FindByEmail(request.Email)
+func (userService *UserServiceImpl) LoginUser(request dto.LoginRequest) error {
+	user, err := userService.userRepository.FindByEmail(request.Email)
 	fmt.Println(user)
 
-	u, ok := user.OrElseThrow().(*entity.Users) // 타입 어서션
+	if err != nil {
+		return err
+	}
+
+	if user == nil {
+		return errors.New("user not found")
+	}
+	u, ok := user.(*entity.Users) // 타입 어서션
 	if !ok {
-		panic(errors.New("unexpected user type"))
+		return errors.New("unexpected user type")
 	}
-	if u.Password != request.Password {
-		panic(errors.New("잘못된 정보입니다"))
+	if u.Password == request.Password {
+		return nil
 	}
+	panic(errors.New("잘못된 정보입니다"))
 }

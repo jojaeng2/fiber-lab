@@ -1,5 +1,11 @@
 package utils
 
+import "errors"
+
+/*
+Go에서 Optional은 권장되지 않음.
+이유는 Go 언어의 철학 중 하나인 "오류를 처리하는 것은 호출자의 책임이다"와 관련이 있습니다.
+*/
 type Optional struct {
 	instance interface{}
 }
@@ -26,5 +32,5 @@ func (optional Optional) OrElseThrow() interface{} {
 	if optional.IsPresent() {
 		return optional.instance
 	}
-	panic("Null Pointer Exception")
+	return errors.New("null Pointer Exception")
 }

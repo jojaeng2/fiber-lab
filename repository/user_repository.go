@@ -2,7 +2,7 @@ package repository
 
 import (
 	"custom-modules/entity"
-	"custom-modules/utils"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -10,7 +10,7 @@ import (
 type UserRepository interface {
 	Save(user *entity.Users) error
 	FindAll() ([]entity.Users, error)
-	FindByEmail(email string) utils.Optional
+	FindByEmail(email string) (interface{}, error)
 }
 
 type UserRepositoryImpl struct {
@@ -34,14 +34,14 @@ func (repo *UserRepositoryImpl) FindAll() ([]entity.Users, error) {
 	return users, nil
 }
 
-func (repo *UserRepositoryImpl) FindByEmail(email string) utils.Optional {
+func (repo *UserRepositoryImpl) FindByEmail(email string) (interface{}, error) {
 	var user entity.Users
 	err := repo.db.Where("email = ?", email).First(&user).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return *utils.OfNullable(nil)
+			return nil, errors.New("user not found")
 		}
-		return *utils.OfNullable(nil)
+		return nil, err
 	}
-	return *utils.OfNullable(user)
+	return &user, nil
 }
