@@ -67,5 +67,5 @@ func (userService *UserServiceImpl) LoginUser(request dto.LoginRequest) error {
 	if u.Password == request.Password {
 		return nil
 	}
-	return errors.New("잘못된 정보입니다.")
+	panic(errors.New("잘못된 정보입니다"))
 }
