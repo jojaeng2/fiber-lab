@@ -5,7 +5,8 @@ import (
 	"custom-modules/entity"
 	"custom-modules/repository"
 	"errors"
-	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type UserService interface {
@@ -18,33 +19,50 @@ type UserService interface {
 
 type UserServiceImpl struct {
 	userRepository repository.UserRepository
+	db             *gorm.DB
 }
 
-func NewUserService(userRepository repository.UserRepository) UserService {
+func NewUserService(userRepository repository.UserRepository, db *gorm.DB) UserService {
 	return &UserServiceImpl{
 		userRepository: userRepository,
+		db:             db,
 	}
 }
 
 func (userService *UserServiceImpl) SaveUser(request dto.CreateUserRequest) error {
-	user := entity.Users{
-		Name:     request.Name,
-		Email:    request.Email,
-		Password: request.Password,
-	}
-	return userService.userRepository.Save(&user)
+	return userService.db.Transaction(func(tx *gorm.DB) error {
+		user := entity.Users{
+			Name:     request.Name,
+			Email:    request.Email,
+			Password: request.Password,
+		}
+		return userService.userRepository.Save(&user)
+	})
 }
 
 func (userService *UserServiceImpl) FindAllUsers() ([]entity.Users, error) {
-	users, err := userService.userRepository.FindAll()
-	if err != nil {
-		return nil, err
-	}
-	return users, nil
+	var users []entity.Users
+	err := userService.db.Transaction(func(tx *gorm.DB) error {
+		var err error
+		users, err = userService.userRepository.FindAll()
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return users, err
 }
 
 func (userService *UserServiceImpl) FindOneByEmail(email string) (interface{}, error) {
-	user, err := userService.userRepository.FindByEmail(email)
+	var user entity.Users
+	err := userService.db.Transaction(func(tx *gorm.DB) error {
+		u, err := userService.userRepository.FindByEmail(email)
+		if err != nil {
+			return err
+		}
+		user = *u.(*entity.Users)
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -52,30 +70,33 @@ func (userService *UserServiceImpl) FindOneByEmail(email string) (interface{}, e
 }
 
 func (userService *UserServiceImpl) LoginUser(request dto.LoginRequest) error {
-	user, err := userService.userRepository.FindByEmail(request.Email)
-	fmt.Println(user)
-
+	var user entity.Users
+	err := userService.db.Transaction(func(tx *gorm.DB) error {
+		u, err := userService.userRepository.FindByEmail(request.Email)
+		if err != nil {
+			return err
+		}
+		if u == nil {
+			return errors.New("user not found")
+		}
+		user = *u.(*entity.Users)
+		return nil
+	})
 	if err != nil {
 		return err
 	}
-
-	if user == nil {
-		return errors.New("user not found")
+	if user.Password != request.Password {
+		return errors.New("password가 일치하지 않습니다")
 	}
-	u, ok := user.(*entity.Users) // 타입 어서션
-	if !ok {
-		return errors.New("unexpected user type")
-	}
-	if u.Password == request.Password {
-		return nil
-	}
-	panic(errors.New("잘못된 정보입니다"))
+	return nil
 }
 
 func (userService *UserServiceImpl) DeleteUserByEmail(email string) error {
-	err := userService.userRepository.DeleteByEmail(email)
-	if err != nil {
-		return err
-	}
-	return nil
+	return userService.db.Transaction(func(tx *gorm.DB) error {
+		err := userService.userRepository.DeleteByEmail(email)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 }

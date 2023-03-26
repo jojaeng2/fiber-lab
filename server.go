@@ -32,6 +32,6 @@ func initializeUserController() controller.UserController {
 	db.AutoMigrate(&entity.Users{})
 
 	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository)
+	userService := service.NewUserService(userRepository, db)
 	return controller.NewUserController(userService)
 }
