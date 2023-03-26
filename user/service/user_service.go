@@ -1,9 +1,9 @@
 package service
 
 import (
-	"custom-modules/dto"
-	"custom-modules/entity"
-	"custom-modules/repository"
+	"custom-modules/user/dto"
+	"custom-modules/user/entity"
+	"custom-modules/user/repository"
 	"errors"
 
 	"gorm.io/gorm"
@@ -70,7 +70,6 @@ func (userService *UserServiceImpl) FindOneByEmail(email string) (interface{}, e
 }
 
 func (userService *UserServiceImpl) LoginUser(request dto.LoginRequest) error {
-	var user entity.Users
 	err := userService.db.Transaction(func(tx *gorm.DB) error {
 		u, err := userService.userRepository.FindByEmail(request.Email)
 		if err != nil {
@@ -79,14 +78,14 @@ func (userService *UserServiceImpl) LoginUser(request dto.LoginRequest) error {
 		if u == nil {
 			return errors.New("user not found")
 		}
-		user = *u.(*entity.Users)
+		user := *u.(*entity.Users)
+		if user.Password != request.Password {
+			return errors.New("password가 일치하지 않습니다")
+		}
 		return nil
 	})
 	if err != nil {
 		return err
-	}
-	if user.Password != request.Password {
-		return errors.New("password가 일치하지 않습니다")
 	}
 	return nil
 }

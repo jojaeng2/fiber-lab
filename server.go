@@ -1,10 +1,10 @@
 package main
 
 import (
-	"custom-modules/controller"
-	"custom-modules/entity"
-	"custom-modules/repository"
-	"custom-modules/service"
+	"custom-modules/user/controller"
+	"custom-modules/user/entity"
+	"custom-modules/user/repository"
+	"custom-modules/user/service"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/mysql"

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"custom-modules/entity"
+	"custom-modules/user/entity"
 	"errors"
 	"fmt"
 
