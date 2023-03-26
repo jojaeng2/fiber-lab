@@ -12,6 +12,7 @@ type UserController interface {
 	FindAllUsers(c *fiber.Ctx) error
 	FindOneByEmail(c *fiber.Ctx) error
 	Login(c *fiber.Ctx) error
+	DeleteByEmail(c *fiber.Ctx) error
 }
 
 type UserControllerImpl struct {
@@ -63,6 +64,15 @@ func (controller *UserControllerImpl) Login(c *fiber.Ctx) error {
 	err2 := controller.userService.LoginUser(request)
 	if err2 != nil {
 		return err2
+	}
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func (controller *UserControllerImpl) DeleteByEmail(c *fiber.Ctx) error {
+	email := c.Params("email")
+	err := controller.userService.DeleteUserByEmail(email)
+	if err != nil {
+		return c.SendStatus(fiber.StatusNotFound)
 	}
 	return c.SendStatus(fiber.StatusOK)
 }

@@ -18,7 +18,7 @@ func main() {
 	app.Post("/users", userController.AddUser)
 	app.Post("/login", userController.Login)
 	app.Get("/users/:email", userController.FindOneByEmail)
-
+	app.Delete("/delete/:email", userController.DeleteByEmail)
 	app.Listen(":3000")
 }
 

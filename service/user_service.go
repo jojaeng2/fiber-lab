@@ -13,6 +13,7 @@ type UserService interface {
 	FindAllUsers() ([]entity.Users, error)
 	FindOneByEmail(email string) (interface{}, error)
 	LoginUser(request dto.LoginRequest) error
+	DeleteUserByEmail(email string) error
 }
 
 type UserServiceImpl struct {
@@ -69,4 +70,12 @@ func (userService *UserServiceImpl) LoginUser(request dto.LoginRequest) error {
 		return nil
 	}
 	panic(errors.New("잘못된 정보입니다"))
+}
+
+func (userService *UserServiceImpl) DeleteUserByEmail(email string) error {
+	err := userService.userRepository.DeleteByEmail(email)
+	if err != nil {
+		return err
+	}
+	return nil
 }
