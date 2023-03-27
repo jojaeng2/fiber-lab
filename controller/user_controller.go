@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"custom-modules/user/dto"
-	"custom-modules/user/service"
+	"custom-modules/dto"
+	"custom-modules/service"
 
 	"github.com/gofiber/fiber/v2"
 )

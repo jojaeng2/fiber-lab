@@ -1,17 +1,10 @@
 package main
 
 import (
-	"custom-modules/user"
-
-	// "custom-modules/comment/controller"
-	// boardentity "custom-modules/comment/entity"
-	// "custom-modules/comment/repository"
-	// "custom-modules/comment/service"
-
-	// "custom-modules/board/controller"
-	// "custom-modules/board/entity"
-	// "custom-modules/board/repository"
-	// "custom-modules/board/service"
+	"custom-modules/controller"
+	"custom-modules/entity"
+	"custom-modules/repository"
+	"custom-modules/service"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/mysql"
@@ -21,12 +14,12 @@ import (
 func main() {
 	app := fiber.New()
 	db := initDB()
-	userModule := user.NewUserModule(db)
-	app.Get("/users", userModule.UserController.FindAllUsers)
-	app.Post("/users", userModule.UserController.AddUser)
-	app.Post("/login", userModule.UserController.Login)
-	app.Get("/users/:email", userModule.UserController.FindOneByEmail)
-	app.Delete("/delete/:email", userModule.UserController.DeleteByEmail)
+	userController := initUserController(db)
+	app.Get("/users", userController.FindAllUsers)
+	app.Post("/users", userController.AddUser)
+	app.Post("/login", userController.Login)
+	app.Get("/users/:email", userController.FindOneByEmail)
+	app.Delete("/delete/:email", userController.DeleteByEmail)
 	app.Listen(":3000")
 }
 
@@ -37,6 +30,16 @@ func initDB() *gorm.DB {
 		panic("failed to connect database")
 	}
 	return db
+}
+
+func initUserController(db *gorm.DB) controller.UserController {
+	if err := db.AutoMigrate(&entity.Users{}); err != nil {
+		panic("UserModule DI Fail")
+	}
+	repository := repository.NewUserRepository(db)
+	service := service.NewUserService(repository, db)
+	controller := controller.NewUserController(service)
+	return controller
 }
 
 func initCommentDomain(db *gorm.DB) {
