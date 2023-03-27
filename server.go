@@ -1,10 +1,7 @@
 package main
 
 import (
-	"custom-modules/user/controller"
-	userentity "custom-modules/user/entity"
-	"custom-modules/user/repository"
-	"custom-modules/user/service"
+	"custom-modules/user"
 
 	// "custom-modules/comment/controller"
 	// boardentity "custom-modules/comment/entity"
@@ -24,12 +21,12 @@ import (
 func main() {
 	app := fiber.New()
 	db := initDB()
-	userController := initUserDomain(db)
-	app.Get("/users", userController.FindAllUsers)
-	app.Post("/users", userController.AddUser)
-	app.Post("/login", userController.Login)
-	app.Get("/users/:email", userController.FindOneByEmail)
-	app.Delete("/delete/:email", userController.DeleteByEmail)
+	userModule := user.NewUserModule(db)
+	app.Get("/users", userModule.UserController.FindAllUsers)
+	app.Post("/users", userModule.UserController.AddUser)
+	app.Post("/login", userModule.UserController.Login)
+	app.Get("/users/:email", userModule.UserController.FindOneByEmail)
+	app.Delete("/delete/:email", userModule.UserController.DeleteByEmail)
 	app.Listen(":3000")
 }
 
@@ -40,14 +37,6 @@ func initDB() *gorm.DB {
 		panic("failed to connect database")
 	}
 	return db
-}
-
-func initUserDomain(db *gorm.DB) controller.UserController {
-	db.AutoMigrate(&userentity.Users{})
-
-	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository, db)
-	return controller.NewUserController(userService)
 }
 
 func initCommentDomain(db *gorm.DB) {
