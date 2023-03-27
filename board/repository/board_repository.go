@@ -10,7 +10,7 @@ type BoardRepository interface {
 	Save(board *entity.Board) error
 	FindByTitle(title string) (interface{}, error)
 	FindById(id int) (interface{}, error)
-	DeleteById(id int) error
+	Delete(board *entity.Board) error
 }
 
 type BoardRepositoryImpl struct {
@@ -43,12 +43,7 @@ func (repo *BoardRepositoryImpl) FindById(id int) (interface{}, error) {
 	return board, nil
 }
 
-func (repo *BoardRepositoryImpl) DeleteById(id int) error {
-	var board entity.Board
-	err := repo.db.Where("id = ?", id).First(&board).Error
-	if err != nil {
-		return err
-	}
+func (repo *BoardRepositoryImpl) Delete(board *entity.Board) error {
 	repo.db.Delete(&board)
 	return nil
 }
