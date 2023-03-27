@@ -5,6 +5,7 @@ import (
 	"custom-modules/entity"
 	"custom-modules/repository"
 	"custom-modules/service"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/mysql"
@@ -14,7 +15,9 @@ import (
 func main() {
 	app := fiber.New()
 	db := initDB()
-	userController := initUserController(db)
+	userController := initUserDomain(db)
+	boardController := initBoardDomain(db)
+	fmt.Println(boardController)
 	app.Get("/users", userController.FindAllUsers)
 	app.Post("/users", userController.AddUser)
 	app.Post("/login", userController.Login)
@@ -32,19 +35,23 @@ func initDB() *gorm.DB {
 	return db
 }
 
-func initUserController(db *gorm.DB) controller.UserController {
+func initUserDomain(db *gorm.DB) controller.UserController {
 	if err := db.AutoMigrate(&entity.Users{}); err != nil {
-		panic("UserModule DI Fail")
+		panic("User Domain DI Fail")
 	}
 	repository := repository.NewUserRepository(db)
 	service := service.NewUserService(repository, db)
-	controller := controller.NewUserController(service)
-	return controller
+	return controller.NewUserController(service)
 }
 
 func initCommentDomain(db *gorm.DB) {
 }
 
-func initBoardDomain(db *gorm.DB) {
-
+func initBoardDomain(db *gorm.DB) controller.BoardController {
+	if err := db.AutoMigrate(&entity.Board{}); err != nil {
+		panic("Board Domain DI Fail")
+	}
+	repository := repository.NewBoardRepository(db)
+	service := service.NewBoardService(repository, db)
+	return controller.NewBoardController(service)
 }
