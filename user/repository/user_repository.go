@@ -3,7 +3,6 @@ package repository
 import (
 	"custom-modules/user/entity"
 	"errors"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -39,7 +38,6 @@ func (repo *UserRepositoryImpl) FindAll() ([]entity.Users, error) {
 func (repo *UserRepositoryImpl) FindByEmail(email string) (interface{}, error) {
 	var user entity.Users
 	err := repo.db.Where("email = ?", email).First(&user).Error
-	fmt.Println(email, err)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, errors.New("user not found")
@@ -52,7 +50,6 @@ func (repo *UserRepositoryImpl) FindByEmail(email string) (interface{}, error) {
 func (repo *UserRepositoryImpl) DeleteByEmail(email string) error {
 	var user entity.Users
 	err := repo.db.Where("email = ?", email).First(&user).Error
-	fmt.Println(email, err)
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
