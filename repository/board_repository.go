@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"custom-modules/board/entity"
+	"custom-modules/entity"
 
 	"gorm.io/gorm"
 )

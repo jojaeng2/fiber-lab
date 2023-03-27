@@ -1,9 +1,9 @@
 package service
 
 import (
-	"custom-modules/board/dto"
-	"custom-modules/board/entity"
-	"custom-modules/board/repository"
+	"custom-modules/dto"
+	"custom-modules/entity"
+	"custom-modules/repository"
 
 	"gorm.io/gorm"
 )
