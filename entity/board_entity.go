@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"custom-modules/comment/entity"
+	"custom-modules/entity"
 
 	"gorm.io/gorm"
 )
