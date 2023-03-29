@@ -7,7 +7,7 @@ func LoginInterceptor(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	session.Set("Key", ctx.Params("id"))
+	session.Set("user", ctx.Params("id"))
 	if err := session.Save(); err != nil {
 		panic("세션 저장소 문제 발생")
 	}

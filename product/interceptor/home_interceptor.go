@@ -15,7 +15,10 @@ func AuthInterceptor(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	value := session.Get("Key")
+	value := session.Get("user")
 	fmt.Println(value)
+	if value == nil {
+		return ctx.Redirect("http://localhost:3000/123")
+	}
 	return ctx.Next()
 }
